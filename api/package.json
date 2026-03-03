@@ -1,0 +1,7 @@
+{
+  "name": "ito-notion-proxy",
+  "version": "1.0.0",
+  "dependencies": {
+    "@notionhq/client": "^2.2.5"
+  }
+}
