@@ -5,7 +5,7 @@ const notion = new Client({
   auth: process.env.NOTION_TOKEN,
 });
 
-// Parse Google Service Account JSON
+// Google credentials
 const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
 
 const auth = new google.auth.GoogleAuth({
@@ -38,7 +38,6 @@ export default async function handler(req, res) {
     const { properties, photos_avant, photos_apres } = req.body;
     const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID;
 
-    // 🔹 Function to upload image to Drive
     async function uploadToDrive(file) {
 
       const buffer = Buffer.from(
@@ -59,7 +58,7 @@ export default async function handler(req, res) {
 
       const fileId = response.data.id;
 
-      // Make file public
+      // Make public
       await drive.permissions.create({
         fileId,
         requestBody: {
@@ -71,10 +70,10 @@ export default async function handler(req, res) {
       return `https://drive.google.com/file/d/${fileId}/view`;
     }
 
-    // 🔹 Upload photos
     let linksAvant = [];
     let linksApres = [];
 
+    // Upload photos avant
     if (photos_avant && photos_avant.length > 0) {
       for (const file of photos_avant) {
         const link = await uploadToDrive(file);
@@ -82,16 +81,17 @@ export default async function handler(req, res) {
       }
     }
 
-    if (photos_apres && photos_apres.length > 0) {
+    // Upload photos après
+    if (photos_apres && photos_apres?.length > 0) {
       for (const file of photos_apres) {
         const link = await uploadToDrive(file);
         linksApres.push(link);
       }
     }
 
-    // 🔹 Add Drive links to Notion properties
+    // Add links to Notion properties using EXACT column names
     if (linksAvant.length > 0) {
-      properties["Fotos Antes"] = {
+      properties["Photos avant"] = {
         rich_text: [
           {
             text: {
@@ -103,7 +103,7 @@ export default async function handler(req, res) {
     }
 
     if (linksApres.length > 0) {
-      properties["Fotos Después"] = {
+      properties["Photos après"] = {
         rich_text: [
           {
             text: {
@@ -114,7 +114,7 @@ export default async function handler(req, res) {
       };
     }
 
-    // 🔹 Create Notion page
+    // Create Notion page
     const response = await notion.pages.create({
       parent: {
         database_id: process.env.NOTION_DATABASE_ID,
