@@ -1,5 +1,3 @@
-console.log("GOOGLE CREDS:", process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
-console.log("FOLDER:", process.env.GOOGLE_DRIVE_FOLDER_ID);
 import { Client } from "@notionhq/client";
 import { google } from "googleapis";
 
