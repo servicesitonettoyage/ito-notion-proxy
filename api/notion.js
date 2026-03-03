@@ -103,7 +103,7 @@ export default async function handler(req, res) {
     }
 
     if (linksApres.length > 0) {
-      properties["Photos après"] = {
+      properties["Photos apres"] = {
         rich_text: [
           {
             text: {
